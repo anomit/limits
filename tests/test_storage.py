@@ -2,6 +2,7 @@ import time
 
 import mock
 import pymemcache.client
+import pymongo
 import pytest
 import redis
 import redis.sentinel
@@ -10,8 +11,9 @@ import unittest
 
 from limits.errors import ConfigurationError
 from limits.storage import (
-    MemoryStorage, RedisStorage, MemcachedStorage, RedisSentinelStorage,
-    RedisClusterStorage, Storage, GAEMemcachedStorage, storage_from_string
+    MemoryStorage, RedisStorage, MemcachedStorage, MongoDBStorage,
+    RedisSentinelStorage, RedisClusterStorage, Storage, GAEMemcachedStorage,
+    storage_from_string
 )
 from limits.strategies import (
     MovingWindowRateLimiter
@@ -26,6 +28,12 @@ class BaseStorageTests(unittest.TestCase):
         redis.from_url('unix:///tmp/limits.redis.sock').flushall()
         redis.from_url("redis://localhost:7379").flushall()
         redis.from_url("redis://:sekret@localhost:7389").flushall()
+        pymongo.MongoClient(
+            "mongodb://localhost:37017"
+        ).limit_storage.windows.drop()
+        pymongo.MongoClient(
+            "mongodb://localhost:37017"
+        ).limit_storage.counters.drop()
         redis.sentinel.Sentinel([
             ("localhost", 26379)
         ]).master_for("localhost-redis-sentinel").flushall()
@@ -101,6 +109,12 @@ class BaseStorageTests(unittest.TestCase):
                 RedisClusterStorage
             )
         )
+        self.assertTrue(
+            isinstance(
+                storage_from_string("mongodb://localhost:37017/"),
+                MongoDBStorage
+            )
+        )
         if RUN_GAE:
             self.assertTrue(
                 isinstance(
@@ -163,6 +177,9 @@ class BaseStorageTests(unittest.TestCase):
         self.assertTrue(
             storage_from_string("redis+cluster://localhost:7000").check()
         )
+        self.assertTrue(
+            storage_from_string("mongodb://localhost:37017").check()
+        )
         if RUN_GAE:
             self.assertTrue(storage_from_string("gaememcached://").check())
 
@@ -221,5 +238,3 @@ class BaseStorageTests(unittest.TestCase):
         storage = storage_from_string("mystorage://")
         self.assertTrue(isinstance(storage, MyStorage))
         MovingWindowRateLimiter(storage)
-
-
