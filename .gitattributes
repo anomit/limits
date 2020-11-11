@@ -1,2 +1,2 @@
 flask_ratelimits/_version.py export-subst
-limits/_version.py export-subst
+async_limits/_version.py export-subst
