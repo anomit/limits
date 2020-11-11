@@ -30,8 +30,8 @@ extensions = [
 
 source_suffix = '.rst'
 master_doc = 'index'
-project = u'limits'
-copyright = u'2015, Ali-Akber Saifee'
+project = u'async_limits'
+copyright = u'2020, Anomit Ghosh'
 
 version = release = limits.__version__
 exclude_patterns = []
@@ -39,17 +39,17 @@ pygments_style = 'sphinx'
 htmlhelp_basename = 'limitsdoc'
 
 latex_documents = [
-    ('index', 'limits.tex', u'limits Documentation',
-     u'Ali-Akber Saifee', 'manual'),
+    ('index', 'async_limits.tex', u'async_limits Documentation',
+     u'Anomit Ghosh', 'manual'),
 ]
 man_pages = [
-    ('index', 'flask-limiter', u'limits Documentation',
-     [u'Ali-Akber Saifee'], 1)
+    ('index', 'flask-limiter', u'async_limits Documentation',
+     [u'Anomit Ghosh'], 1)
 ]
 
 texinfo_documents = [
-    ('index', 'limits', u'limits Documentation',
-     u'Ali-Akber Saifee', 'limits', 'One line description of project.',
+    ('index', 'async_limits', u'async_limits Documentation',
+     u'Ali-Akber Saifee', 'async_limits', 'One line description of project.',
      'Miscellaneous'),
 ]
 

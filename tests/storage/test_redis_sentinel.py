@@ -21,7 +21,7 @@ class RedisSentinelStorageTests(SharedRedisTests, unittest.TestCase):
 
     def test_init_options(self):
         with mock.patch(
-            "limits.storage.redis_sentinel.get_dependency"
+            "async_limits.storage.redis_sentinel.get_dependency"
         ) as get_dependency:
             storage_from_string(
                 self.storage_url + '/' + self.service_name,

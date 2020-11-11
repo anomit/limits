@@ -83,7 +83,7 @@ class RedisInteractor(object):
 
     def clear(self, key, connection):
         """
-        :param str key: the key to clear rate limits for
+        :param str key: the key to clear rate async_limits for
         :param connection: Redis connection
         """
         connection.delete(key)
@@ -201,7 +201,7 @@ class RedisStorage(RedisInteractor, Storage):
 
     def clear(self, key):
         """
-        :param str key: the key to clear rate limits for
+        :param str key: the key to clear rate async_limits for
         """
         return super(RedisStorage, self).clear(key, self.storage)
 

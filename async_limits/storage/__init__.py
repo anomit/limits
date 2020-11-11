@@ -3,9 +3,10 @@ from six.moves import urllib
 from limits.errors import ConfigurationError
 from .memory import MemoryStorage
 
-from .base import Storage
+from .base import Storage, AsyncStorage
 from .registry import SCHEMES
 from .redis import RedisStorage
+from .async_redis import AsyncRedisStorage
 from .redis_cluster import RedisClusterStorage
 from .redis_sentinel import RedisSentinelStorage
 from .memcached import MemcachedStorage
@@ -31,8 +32,10 @@ def storage_from_string(storage_string, **options):
 __all__ = [
     "storage_from_string",
     "Storage",
+    "AsyncStorage",
     "MemoryStorage",
     "RedisStorage",
+    "AsyncRedisStorage",
     "RedisClusterStorage",
     "RedisSentinelStorage",
     "MemcachedStorage",

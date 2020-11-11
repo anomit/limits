@@ -77,7 +77,7 @@ class MemoryStorage(Storage):
 
     def clear(self, key):
         """
-        :param str key: the key to clear rate limits for
+        :param str key: the key to clear rate async_limits for
         """
         self.storage.pop(key, None)
         self.expirations.pop(key, None)

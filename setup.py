@@ -1,11 +1,11 @@
 """
-setup.py for limits
+setup.py for async_limits
 
 
 """
-__author__ = "Ali-Akber Saifee"
-__email__ = "ali@indydevs.org"
-__copyright__ = "Copyright 2015, Ali-Akber Saifee"
+__author__ = "Anomit Ghosh"
+__email__ = "anomit.ghosh@gmail.com"
+__copyright__ = "Copyright 2020, Anomit Ghosh"
 
 import os
 from setuptools import setup, find_packages
@@ -19,11 +19,11 @@ REQUIREMENTS = [
 ]
 
 setup(
-    name='limits',
+    name='async_limits',
     author=__author__,
     author_email=__email__,
     license="MIT",
-    url="https://limits.readthedocs.org",
+    # url="https://limits.readthedocs.org",
     zip_safe=False,
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),

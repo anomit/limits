@@ -97,7 +97,7 @@ class MemcachedStorage(Storage):
 
     def clear(self, key):
         """
-        :param str key: the key to clear rate limits for
+        :param str key: the key to clear rate async_limits for
         """
         self.storage.delete(key)
 

@@ -42,8 +42,8 @@ def get_config():
     cfg.VCS = "git"
     cfg.style = "pep440"
     cfg.tag_prefix = ""
-    cfg.parentdir_prefix = "limits-"
-    cfg.versionfile_source = "limits/_version.py"
+    cfg.parentdir_prefix = "async-async_limits-"
+    cfg.versionfile_source = "async_limits/_version.py"
     cfg.verbose = False
     return cfg
 

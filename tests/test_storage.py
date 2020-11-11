@@ -23,7 +23,7 @@ from tests import RUN_GAE
 class BaseStorageTests(unittest.TestCase):
     def setUp(self):
         pymemcache.client.Client(('localhost', 22122)).flush_all()
-        redis.from_url('unix:///tmp/limits.redis.sock').flushall()
+        redis.from_url('unix:///tmp/async_limits.redis.sock').flushall()
         redis.from_url("redis://localhost:7379").flushall()
         redis.from_url("redis://:sekret@localhost:7389").flushall()
         redis.sentinel.Sentinel([
@@ -47,14 +47,14 @@ class BaseStorageTests(unittest.TestCase):
         )
         self.assertTrue(
             isinstance(
-                storage_from_string("redis+unix:///tmp/limits.redis.sock"),
+                storage_from_string("redis+unix:///tmp/async_limits.redis.sock"),
                 RedisStorage
             )
         )
 
         self.assertTrue(
             isinstance(
-                storage_from_string("redis+unix://:password/tmp/limits.redis.sock"),  # noqa: E501
+                storage_from_string("redis+unix://:password/tmp/async_limits.redis.sock"),  # noqa: E501
                 RedisStorage
             )
         )
@@ -75,7 +75,7 @@ class BaseStorageTests(unittest.TestCase):
 
         self.assertTrue(
             isinstance(
-                storage_from_string("memcached:///tmp/limits.memcached.sock"),
+                storage_from_string("memcached:///tmp/async_limits.memcached.sock"),
                 MemcachedStorage
             )
         )
@@ -114,7 +114,7 @@ class BaseStorageTests(unittest.TestCase):
             "redis+sentinel://localhost:26379"
         )
         with mock.patch(
-                "limits.storage.redis_sentinel.get_dependency"
+                "async_limits.storage.redis_sentinel.get_dependency"
         ) as get_dependency:
             self.assertTrue(
                 isinstance(
@@ -138,7 +138,7 @@ class BaseStorageTests(unittest.TestCase):
         )
         self.assertTrue(
             storage_from_string(
-                "redis+unix:///tmp/limits.redis.sock"
+                "redis+unix:///tmp/async_limits.redis.sock"
             ).check()
         )
         self.assertTrue(
@@ -151,7 +151,7 @@ class BaseStorageTests(unittest.TestCase):
         )
         self.assertTrue(
             storage_from_string(
-                "memcached:///tmp/limits.memcached.sock"
+                "memcached:///tmp/async_limits.memcached.sock"
             ).check()
         )
         self.assertTrue(

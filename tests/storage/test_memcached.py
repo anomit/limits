@@ -22,7 +22,7 @@ class MemcachedStorageTests(unittest.TestCase):
 
     def test_options(self):
         with mock.patch(
-            "limits.storage.memcached.get_dependency"
+            "async_limits.storage.memcached.get_dependency"
         ) as get_dependency:
             storage_from_string(self.storage_url, connect_timeout=1).check()
             self.assertEqual(

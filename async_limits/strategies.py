@@ -5,7 +5,7 @@ rate limiting strategies
 from abc import ABCMeta, abstractmethod
 import weakref
 import six
-
+import aioredis
 
 @six.add_metaclass(ABCMeta)
 class RateLimiter(object):
@@ -52,6 +52,50 @@ class RateLimiter(object):
     def clear(self, item, *identifiers):
         return self.storage().clear(item.key_for(*identifiers))
 
+@six.add_metaclass(ABCMeta)
+class AsyncRateLimiter(object):
+    def __init__(self, storage):
+        self.storage = weakref.ref(storage)
+
+    @abstractmethod
+    async def hit(self, item, *identifiers):
+        """
+        creates a hit on the rate limit and returns True if successful.
+
+        :param item: a :class:`RateLimitItem` instance
+        :param identifiers: variable list of strings to uniquely identify the
+         limit
+        :return: True/False
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    async def test(self, item, *identifiers):
+        """
+        checks  the rate limit and returns True if it is not
+        currently exceeded.
+
+        :param item: a :class:`RateLimitItem` instance
+        :param identifiers: variable list of strings to uniquely identify the
+         limit
+        :return: True/False
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    async def get_window_stats(self, item, *identifiers):
+        """
+        returns the number of requests remaining and reset of this limit.
+
+        :param item: a :class:`RateLimitItem` instance
+        :param identifiers: variable list of strings to uniquely identify the
+         limit
+        :return: tuple (reset time (int), remaining (int))
+        """
+        raise NotImplementedError
+
+    async def clear(self, item, *identifiers):
+        return await self.storage().clear(item.key_for(*identifiers))
 
 class MovingWindowRateLimiter(RateLimiter):
     """
@@ -160,6 +204,54 @@ class FixedWindowRateLimiter(RateLimiter):
         )
         reset = self.storage().get_expiry(item.key_for(*identifiers))
         return (reset, remaining)
+
+
+class AsyncFixedWindowRateLimiter(AsyncRateLimiter):
+    """
+    Reference: :ref:`fixed-window`
+    """
+    async def hit(self, item, *identifiers):
+        """
+        creates a hit on the rate limit and returns True if successful.
+
+        :param item: a :class:`RateLimitItem` instance
+        :param identifiers: variable list of strings to uniquely identify the
+         limit
+        :return: True/False
+        """
+        incr_result = await self.storage().incr(item.key_for(*identifiers), item.get_expiry())
+        return (
+            incr_result
+            <= item.amount
+        )
+
+    async def test(self, item, *identifiers):
+        """
+        checks  the rate limit and returns True if it is not
+        currently exceeded.
+
+        :param item: a :class:`RateLimitItem` instance
+        :param identifiers: variable list of strings to uniquely identify the
+         limit
+        :return: True/False
+        """
+        return await self.storage().get(item.key_for(*identifiers)) < item.amount
+
+    async def get_window_stats(self, item, *identifiers):
+        """
+        returns the number of requests remaining and reset of this limit.
+
+        :param item: a :class:`RateLimitItem` instance
+        :param identifiers: variable list of strings to uniquely identify the
+         limit
+        :return: tuple (reset time (int), remaining (int))
+        """
+        remaining = max(
+            0, item.amount - await self.storage().get(item.key_for(*identifiers))
+        )
+        reset = await self.storage().get_expiry(item.key_for(*identifiers))
+        return (reset, remaining)
+
 
 
 class FixedWindowElasticExpiryRateLimiter(FixedWindowRateLimiter):

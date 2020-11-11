@@ -1,5 +1,5 @@
 exclude_paths:
-  - limits/backports/*
+  - async_limits/backports/*
   - versioneer.py
-  - limits/_version.py
+  - async_limits/_version.py
   - tests/*

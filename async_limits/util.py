@@ -38,7 +38,7 @@ def get_dependency(dep):
 
 def parse_many(limit_string):
     """
-    parses rate limits in string notation containing multiple rate limits
+    parses rate async_limits in string notation containing multiple rate async_limits
     (e.g. '1/second; 5/minute')
 
     :param string limit_string: rate limit string using :ref:`ratelimit-string`
