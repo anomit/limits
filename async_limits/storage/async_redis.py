@@ -1,9 +1,11 @@
 import aioredis
 import time
-
 from ..util import get_dependency
 from ..errors import ConfigurationError
 from .base import AsyncStorage
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class AsyncRedisInteractor(object):
@@ -71,7 +73,8 @@ class AsyncRedisInteractor(object):
         :param int expiry: amount in seconds for the key to expire in
         """
         value = await connection.incrby(key, incr_by)
-        if elastic_expiry or value == 1:
+        logger.debug('Incremented key %s by %d', key, incr_by)
+        if elastic_expiry or value == incr_by:
             await connection.expire(key, expiry)
         return value
 
