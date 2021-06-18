@@ -62,7 +62,7 @@ class AsyncRedisInteractor(object):
             return current
         """
 
-    async def incr(self, key, expiry, connection: aioredis.Redis, elastic_expiry=False):
+    async def incr(self, key, expiry, connection: aioredis.Redis, elastic_expiry=False, incr_by=1):
         """
         increments the counter for a given rate limit key
 
@@ -70,7 +70,7 @@ class AsyncRedisInteractor(object):
         :param str key: the key to increment
         :param int expiry: amount in seconds for the key to expire in
         """
-        value = await connection.incr(key)
+        value = await connection.incrby(key, incr_by)
         if elastic_expiry or value == 1:
             await connection.expire(key, expiry)
         return value
@@ -143,7 +143,7 @@ class AsyncRedisStorage(AsyncRedisInteractor, AsyncStorage):
     async def lua_clear_keys(self, keys):
         return await self.storage.evalsha(self.script_clear_keys_sha, keys)
 
-    async def incr(self, key, expiry, elastic_expiry=False):
+    async def incr(self, key, incrby, expiry, elastic_expiry=False, incr_by=1):
         """
         increments the counter for a given rate limit key
 
@@ -151,7 +151,7 @@ class AsyncRedisStorage(AsyncRedisInteractor, AsyncStorage):
         :param int expiry: amount in seconds for the key to expire in
         """
         if elastic_expiry:
-            return await super(AsyncRedisStorage, self).incr(key, expiry, self.storage, elastic_expiry)
+            return await super(AsyncRedisStorage, self).incr(key, expiry, self.storage, elastic_expiry, incr_by)
         else:
             return await self.lua_incr_expire([key], [expiry])
 

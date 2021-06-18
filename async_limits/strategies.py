@@ -210,7 +210,7 @@ class AsyncFixedWindowRateLimiter(AsyncRateLimiter):
     """
     Reference: :ref:`fixed-window`
     """
-    async def hit(self, item, *identifiers):
+    async def hit(self, item, hit_by=1, *identifiers):
         """
         creates a hit on the rate limit and returns True if successful.
 
@@ -219,7 +219,7 @@ class AsyncFixedWindowRateLimiter(AsyncRateLimiter):
          limit
         :return: True/False
         """
-        incr_result = await self.storage().incr(item.key_for(*identifiers), item.get_expiry())
+        incr_result = await self.storage().incr(item.key_for(*identifiers), hit_by, item.get_expiry())
         return (
             incr_result
             <= item.amount
