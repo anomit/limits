@@ -3,9 +3,6 @@ import time
 from ..util import get_dependency
 from ..errors import ConfigurationError
 from .base import AsyncStorage
-import logging
-
-logger = logging.getLogger(__name__)
 
 
 class AsyncRedisInteractor(object):
@@ -57,8 +54,8 @@ class AsyncRedisInteractor(object):
 
     SCRIPT_INCR_EXPIRE = """
             local current
-            current = redis.call("incr",KEYS[1])
-            if tonumber(current) == 1 then
+            current = redis.call("incrby",KEYS[1], KEYS[2])
+            if tonumber(current) == tonumber(KEYS[2]) then
                 redis.call("expire",KEYS[1],ARGV[1])
             end
             return current
@@ -73,8 +70,8 @@ class AsyncRedisInteractor(object):
         :param int expiry: amount in seconds for the key to expire in
         """
         value = await connection.incrby(key, incr_by)
-        logger.debug('Incremented key %s by %d', key, incr_by)
-        if elastic_expiry or value == incr_by:
+
+        if elastic_expiry:
             await connection.expire(key, expiry)
         return value
 
@@ -156,7 +153,7 @@ class AsyncRedisStorage(AsyncRedisInteractor, AsyncStorage):
         if elastic_expiry:
             return await super(AsyncRedisStorage, self).incr(key, expiry, self.storage, elastic_expiry, incr_by)
         else:
-            return await self.lua_incr_expire([key], [expiry])
+            return await self.lua_incr_expire([key, incr_by], [expiry])
 
     async def get(self, key):
         """
