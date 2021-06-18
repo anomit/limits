@@ -54,8 +54,8 @@ class AsyncRedisInteractor(object):
 
     SCRIPT_INCR_EXPIRE = """
             local current
-            current = redis.call("incrby",KEYS[1], KEYS[2])
-            if tonumber(current) == tonumber(KEYS[2]) then
+            current = redis.call("incrby",KEYS[1],ARGV[2])
+            if tonumber(current) == tonumber(ARGV[2]) then
                 redis.call("expire",KEYS[1],ARGV[1])
             end
             return current
@@ -153,7 +153,7 @@ class AsyncRedisStorage(AsyncRedisInteractor, AsyncStorage):
         if elastic_expiry:
             return await super(AsyncRedisStorage, self).incr(key, expiry, self.storage, elastic_expiry, incr_by)
         else:
-            return await self.lua_incr_expire([key, incr_by], [expiry])
+            return await self.lua_incr_expire([key], [expiry, incr_by])
 
     async def get(self, key):
         """
