@@ -76,7 +76,7 @@ class AsyncStorage(object):
         self.lock = threading.RLock()
 
     @abstractmethod
-    async def incr(self, key, expiry, elastic_expiry=False):
+    async def incr(self, key, expiry, elastic_expiry=False, incr_by=1):
         """
         increments the counter for a given rate limit key
 
