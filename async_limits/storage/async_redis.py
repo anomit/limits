@@ -146,7 +146,7 @@ class AsyncRedisStorage(AsyncRedisInteractor, AsyncStorage):
     async def lua_clear_keys(self, keys):
         return await self.storage.evalsha(self.script_clear_keys_sha, keys)
 
-    async def incr(self, key, incrby, expiry, elastic_expiry=False, incr_by=1):
+    async def incr(self, key, expiry, elastic_expiry=False, incr_by=1):
         """
         increments the counter for a given rate limit key
 
